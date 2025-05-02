@@ -8,7 +8,9 @@ Code for MMET: A Multi-Input and Multi-Scale Transformer for Efficient PDEs Solv
 ## Introduction
 A novel Transformer-based framework for solving partial differential equations (PDEs) efficiently in **multi-input, multi-scale, and large-scale scenarios**.
 
-## Core Contributions
+<img src="fig/introduction.png" alt="Introduction" width="500"/>
+
+### Core Contributions
 
 - **Multi-Input Gated Condition Embedding (GCE)**  
   Efficiently encodes PDE inputs of varying types and dimensions (e.g., boundary/initial conditions, operators, geometry).
@@ -18,6 +20,8 @@ A novel Transformer-based framework for solving partial differential equations (
 
 - **Hilbert Curve Re-serialization + Patch Embedding**  
   Spatially coherent patching of mesh inputs reduces attention complexity and boosts performance on large-scale geometry.
+
+<img src="fig/architecture.png" alt="Architecture" width="800"/>
 
 ## Installation
 
