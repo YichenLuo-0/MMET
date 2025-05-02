@@ -21,6 +21,7 @@ class MLP(nn.Module):
         return self.sequential(x)
 
 
+# You can use the following Attention class instead of the torch.nn.MultiheadAttention to reduce the memory usage
 class LinearAttention(nn.Module):
     def __init__(self, embed_dim, num_heads, dropout=0.0):
         super(LinearAttention, self).__init__()
@@ -61,22 +62,13 @@ class LinearAttention(nn.Module):
         k = k.softmax(dim=-1)
 
         k_cumsum = k.sum(dim=-2, keepdim=True)
-
-        print((k_cumsum * q).shape)
-
         a_t = 1.0 / (q * k_cumsum).sum(dim=-1, keepdim=True)
-
-        # print((q * k_cumsum).shape)
-        # print((q * k_cumsum)[0, 0, -1, :])
 
         # Compute context and output
         context = k.transpose(-2, -1) @ v
         out = self.attn_drop((q @ context) * a_t + q)
         out = out.transpose(1, 2).reshape(batch_size, seq_len_q, dims)
-
-        # print(out)
-
-        # out = self.proj(out)
+        out = self.proj(out)
         return out * q_padding_mask
 
 

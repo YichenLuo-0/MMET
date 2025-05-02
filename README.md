@@ -3,7 +3,7 @@
 [![Paper (IJCAI 2025)](https://img.shields.io/badge/Paper-IJCAI%202025-green)](https://github.com/YichenLuo-0/MMET)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Code for MMET: A Multi-Input and Multi-Scale Transformer for Efficient PDEs Solving, presented at the 34th International Joint Conference on Artificial Intelligence (IJCAI 2025).
+Code for MMET: A Multi-Input and Multi-Scale Transformer for Efficient PDEs Solving, presented at *the 34th International Joint Conference on Artificial Intelligence (IJCAI 2025)*.
 
 ## Introduction
 A novel Transformer-based framework for solving partial differential equations (PDEs) efficiently in **multi-input, multi-scale, and large-scale scenarios**.
@@ -69,7 +69,7 @@ More details and download links in [`docs/datasets.md`](docs/datasets.md).
 
 ## Citation
 
-If you find this repository helpful, please consider citing:
+If you find this paper or repository helpful, please consider citing:
 
 ```bibtex
 @inproceedings{luo2025mmet,
@@ -84,5 +84,3 @@ If you find this repository helpful, please consider citing:
 
 For questions or collaboration, feel free to contact:
 - **Yichen Luo**: [yichenlu@kth.se](mailto:yichenlu@kth.se)
-- **Jia Wang**: [Jia.Wang02@xjtlu.edu.cn](mailto:Jia.Wang02@xjtlu.edu.cn)
-- **Zhibo Pang**: [zhibo@kth.se](mailto:yichenlu@kth.se)
