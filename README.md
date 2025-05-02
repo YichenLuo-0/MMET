@@ -5,12 +5,8 @@
 
 Code for MMET: A Multi-Input and Multi-Scale Transformer for Efficient PDEs Solving, presented at the 34th International Joint Conference on Artificial Intelligence (IJCAI 2025).
 
----
-
 ## Introduction
 A novel Transformer-based framework for solving partial differential equations (PDEs) efficiently in **multi-input, multi-scale, and large-scale scenarios**.
-
----
 
 ## Core Contributions
 
@@ -22,8 +18,6 @@ A novel Transformer-based framework for solving partial differential equations (
 
 - **Hilbert Curve Re-serialization + Patch Embedding**  
   Spatially coherent patching of mesh inputs reduces attention complexity and boosts performance on large-scale geometry.
-
----
 
 ## Installation
 
@@ -37,8 +31,6 @@ Recommended environment:
 - Python ≥ 3.8
 - PyTorch ≥ 1.11
 - GPU with ≥ 24GB memory for full-scale experiments
-
----
 
 ## Getting Started
 
@@ -60,8 +52,6 @@ python inference.py --model-checkpoint checkpoints/heat2d.pt --resolution 100x40
 python plot_results.py --input data/test_case.pkl
 ```
 
----
-
 ## Datasets
 
 Supported PDE benchmark datasets:
@@ -77,8 +67,6 @@ Supported PDE benchmark datasets:
 
 More details and download links in [`docs/datasets.md`](docs/datasets.md).
 
----
-
 ## Citation
 
 If you find this repository helpful, please consider citing:
@@ -92,10 +80,9 @@ If you find this repository helpful, please consider citing:
 }
 ```
 
----
-
 ## Contact
 
 For questions or collaboration, feel free to contact:
-- **Dr. Zhibo Pang**: [zhibo@kth.se](mailto:yichenlu@kth.se)
 - **Yichen Luo**: [yichenlu@kth.se](mailto:yichenlu@kth.se)
+- **Jia Wang**: [Jia.Wang02@xjtlu.edu.cn](mailto:Jia.Wang02@xjtlu.edu.cn)
+- **Zhibo Pang**: [zhibo@kth.se](mailto:yichenlu@kth.se)
