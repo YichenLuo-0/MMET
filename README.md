@@ -6,22 +6,25 @@
 Code for MMET: A Multi-Input and Multi-Scale Transformer for Efficient PDEs Solving, presented at *the 34th International Joint Conference on Artificial Intelligence (IJCAI 2025)*.
 
 ## Introduction
-A novel Transformer-based framework for solving partial differential equations (PDEs) efficiently in **multi-input, multi-scale, and large-scale scenarios**.
+
+**MMET (Multi-Input and Multi-Scale Efficient Transformer)** is a Transformer-based framework tailored for solving partial differential equations (PDEs) in complex scientific and engineering domains. Traditional neural PDE solvers often struggle with generalization across varying geometries, boundary/initial conditions, and resolution scales. MMET addresses these limitations through a unified and scalable architecture.
 
 <img src="fig/introduction.png" alt="Introduction" width="500"/>
 
-### Core Contributions
+Unlike existing methods that require model retraining for each new instance, MMET introduces a flexible encoder-decoder structure that separates mesh and query representations. This design enables:
+- **Zero-shot generalization** across unseen geometries and boundary conditions,
+- **Multi-scale querying** without retraining,
+- And **reduced computational overhead** when handling large-scale unstructured meshes.
 
-- **Multi-Input Gated Condition Embedding (GCE)**  
-  Efficiently encodes PDE inputs of varying types and dimensions (e.g., boundary/initial conditions, operators, geometry).
-  
-- **Multi-Scale Support via Encoder-Decoder Architecture**  
-  Query arbitrary resolutions without retraining, supporting zero-shot generalization on unseen mesh grids.
+At the core of MMET are three key innovations:
+- A **Gated Condition Embedding (GCE)** layer for dynamically encoding inputs with different types and dimensions;
+- A **Hilbert-curve-based patch embedding** strategy to preserve spatial locality and reduce attention complexity;
+- And a **multi-scale decoder** that directly supports adaptive resolution inference.
 
-- **Hilbert Curve Re-serialization + Patch Embedding**  
-  Spatially coherent patching of mesh inputs reduces attention complexity and boosts performance on large-scale geometry.
+These components enable MMET to outperform state-of-the-art baselines across diverse physics benchmarks, including elasticity, fluid mechanics, thermodynamics, and porous media flow.
 
 <img src="fig/architecture.png" alt="Architecture" width="800"/>
+
 
 ## Installation
 
