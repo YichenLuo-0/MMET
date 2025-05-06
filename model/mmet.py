@@ -201,7 +201,7 @@ class MMET(nn.Module):
         else:
             raise ValueError("The input dimension is not supported!")
 
-        self.embedding = GCE(d_input_condition, d_hidden=d_embed, d_out=d_embed)
+        self.embedding = GCE(d_input_condition, d_embed)
         self.positional_encoding = MLP(d_input, d_embed, d_embed)
         self.patching = PatchEmbedding(patch_size)
 

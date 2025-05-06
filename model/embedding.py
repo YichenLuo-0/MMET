@@ -6,7 +6,7 @@ from model.activation_func import WaveAct
 
 # Implementation of Gated Condition Embedding (GCE) Layer
 class GCE(nn.Module):
-    def __init__(self, bc_dims, d_hidden=256, d_out=256):
+    def __init__(self, bc_dims, d_out=256):
         super(GCE, self).__init__()
         self.bc_dims = bc_dims
         self.local_dims_num = len(bc_dims) - 1
@@ -21,13 +21,7 @@ class GCE(nn.Module):
 
         # Learnable embedding layer
         d_input = sum(bc_dims) * 2 - bc_dims[0]
-        self.learnable_emb = nn.Sequential(*[
-            nn.Linear(d_input, d_hidden),
-            WaveAct(),
-            nn.Linear(d_hidden, d_hidden),
-            WaveAct(),
-            nn.Linear(d_hidden, d_out),
-        ])
+        self.learnable_emb = nn.Linear(d_input, d_out)
 
     def forward(self, condition, type):
         # Encode boundary conditions, expand dimensions

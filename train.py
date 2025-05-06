@@ -192,7 +192,8 @@ def train(dataloader_train, dataloader_test, model, optimizer, loss_func, epochs
             loss_total = 0.0
 
             def closure():
-                nonlocal optimizer, iter_num, loss_total
+                nonlocal iter_num, loss_total
+                nonlocal points_mesh, bcs_mesh, types_mesh, points_query, gts_query, mesh_mask, query_mask
 
                 # Set the model to training mode
                 optimizer.zero_grad()
@@ -206,13 +207,6 @@ def train(dataloader_train, dataloader_test, model, optimizer, loss_func, epochs
 
             optimizer.step(closure)
             print("Epoch: {}, Iteration: {}, Loss: {:.4f}".format(epoch, i, loss_total / iter_num))
-
-            # optimizer.zero_grad()
-            # pred = model(points_mesh, bcs_mesh, types_mesh, points_query, mesh_mask, query_mask)
-            # loss = loss_with_mask(pred, gts_query, query_mask, loss_func)
-            # loss.backward()
-            # optimizer.step()
-            # print("Epoch: {}, Iteration: {}, Loss: {:.4f}".format(epoch, i, loss.cpu().detach().numpy()))
 
         # Test the model
         with torch.no_grad():
@@ -235,7 +229,7 @@ def train(dataloader_train, dataloader_test, model, optimizer, loss_func, epochs
             print("Test L2 Error: {:.4f}".format(err_test[0].cpu().detach().numpy()))
             if err_test < err_min:
                 err_min = err_test
-                torch.save(model, "datasets/heat2d/model2.pth")
+                torch.save(model, "datasets/heat2d/model.pth")
                 print("Save model")
             print("--------------------------------------------")
 
@@ -245,7 +239,7 @@ def main():
     parser.add_argument("--device", type=str, default="cuda", help="Device to use for training")
     parser.add_argument("--epochs", type=int, default=2000, help="Number of training epochs")
     parser.add_argument("--batch_size", type=int, default=100, help="Batch size for training")
-    parser.add_argument("--lr", type=float, default=1, help="Learning rate for the optimizer")
+    parser.add_argument("--lr", type=float, default=0.1, help="Learning rate for the optimizer")
     args = parser.parse_args()
 
     # Training parameters
@@ -265,13 +259,13 @@ def main():
         d_input='2d',
         d_input_condition=[1, 1],
         d_output=1,
-        d_embed=64,
-        d_model=192,
+        d_embed=32,
+        d_model=128,
         patch_size=1,
         depth=16,
-        num_encoder=4,
-        num_decoder=4,
-        num_heads=3
+        num_encoder=2,
+        num_decoder=2,
+        num_heads=2
     ).to(device)
     model = nn.DataParallel(model)
 
