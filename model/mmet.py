@@ -29,10 +29,7 @@ class MLP(nn.Module):
         self.sequential = nn.Sequential(
             nn.Linear(d_input, d_ff),
             WaveAct(),
-            nn.Linear(d_ff, d_ff),
-            WaveAct(),
-            nn.Linear(d_ff, d_output),
-            WaveAct()
+            nn.Linear(d_ff, d_output)
         )
 
     def forward(self, x):
@@ -207,12 +204,7 @@ class MMET(nn.Module):
 
         self.mlp_mesh = nn.Linear(d_embed * patch_size, d_model)
         self.mlp_query = MLP(d_input, d_model, d_model)
-        self.mlp_out = nn.Sequential(
-            *[
-                MLP(d_model, d_model, d_model),
-                nn.Linear(d_model, d_output)
-            ]
-        )
+        self.mlp_out = MLP(d_model, d_output, d_model)
 
         # Encoder and decoder Transformer layers
         self.encoder = Encoder(d_model, num_encoder, num_heads)
