@@ -7,6 +7,21 @@ from model.patching import PatchEmbedding
 from model.serialization import serialization, sort_tensor
 
 
+def init_weights(module):
+    if isinstance(module, nn.Linear):
+        nn.init.xavier_uniform_(module.weight)
+        if module.bias is not None:
+            nn.init.zeros_(module.bias)
+    elif isinstance(module, nn.MultiheadAttention):
+        nn.init.xavier_uniform_(module.in_proj_weight)
+        nn.init.zeros_(module.in_proj_bias)
+        nn.init.xavier_uniform_(module.out_proj.weight)
+        nn.init.zeros_(module.out_proj.bias)
+    elif isinstance(module, nn.LayerNorm):
+        nn.init.ones_(module.weight)
+        nn.init.zeros_(module.bias)
+
+
 class MLP(nn.Module):
     def __init__(self, d_input, d_output, d_ff=256):
         super(MLP, self).__init__()
@@ -14,7 +29,10 @@ class MLP(nn.Module):
         self.sequential = nn.Sequential(
             nn.Linear(d_input, d_ff),
             WaveAct(),
+            nn.Linear(d_ff, d_ff),
+            WaveAct(),
             nn.Linear(d_ff, d_output),
+            WaveAct()
         )
 
     def forward(self, x):
@@ -77,7 +95,7 @@ class EncoderLayer(nn.Module):
         super(EncoderLayer, self).__init__()
 
         self.attn = torch.nn.MultiheadAttention(d_model, num_heads, batch_first=True)
-        self.ff = MLP(d_model, d_model, 3200)
+        self.ff = MLP(d_model, d_model)
         self.layer_norm_1 = nn.LayerNorm(d_model)
         self.layer_norm_2 = nn.LayerNorm(d_model)
 
@@ -95,7 +113,7 @@ class DecoderLayer(nn.Module):
         super(DecoderLayer, self).__init__()
 
         self.attn = torch.nn.MultiheadAttention(d_model, num_heads, batch_first=True)
-        self.ff = MLP(d_model, d_model, 3200)
+        self.ff = MLP(d_model, d_model)
         self.layer_norm_1 = nn.LayerNorm(d_model)
         self.layer_norm_2 = nn.LayerNorm(d_model)
 
@@ -121,7 +139,7 @@ class Encoder(nn.Module):
     def forward(self, x, mask=None):
         for i in range(self.num_layers):
             # Pass through each encoder layer
-            x = self.layers[i](x, mask)  # * mask
+            x = self.layers[i](x, mask)
         return x
 
 
@@ -135,10 +153,10 @@ class Decoder(nn.Module):
             [DecoderLayer(d_model, num_heads) for _ in range(num_layers)]
         )
 
-    def forward(self, x, encoder_out, mask_q, mask_kv):
+    def forward(self, x, encoder_out, mask_kv):
         for i in range(self.num_layers):
             # Pass through the decoder layer
-            x = self.layers[i](x, encoder_out, mask_kv)  # * mask_q
+            x = self.layers[i](x, encoder_out, mask_kv)
         return x
 
 
@@ -186,9 +204,15 @@ class MMET(nn.Module):
         self.embedding = GCE(d_input_condition, d_hidden=d_embed, d_out=d_embed)
         self.positional_encoding = MLP(d_input, d_embed, d_embed)
         self.patching = PatchEmbedding(patch_size)
-        self.mlp_mesh = MLP(d_embed * patch_size, d_model, d_embed * patch_size)
+
+        self.mlp_mesh = nn.Linear(d_embed * patch_size, d_model)
         self.mlp_query = MLP(d_input, d_model, d_model)
-        self.mlp_out = MLP(d_model, d_output, d_model)
+        self.mlp_out = nn.Sequential(
+            *[
+                MLP(d_model, d_model, d_model),
+                nn.Linear(d_model, d_output)
+            ]
+        )
 
         # Encoder and decoder Transformer layers
         self.encoder = Encoder(d_model, num_encoder, num_heads)
@@ -202,7 +226,7 @@ class MMET(nn.Module):
         :param coords_query:    Query coordinates, of shape [batch_size, max_seq_len, d_input].
         :param mask_mesh:       Mask for the mesh coordinates, of shape [batch_size, max_seq_len, 1].
         :param mask_query:      Mask for the query coordinates, of shape [batch_size, max_seq_len, 1].
-        :return:
+        :return:             The output of the model, of shape [batch_size, max_seq_len, d_output].
         """
 
         # If the mask is not provided, set it to all ones
@@ -225,13 +249,13 @@ class MMET(nn.Module):
         query_patched, mask_patched = self.patching(mesh_emb, mask_mesh)
 
         # Pass through the encoder layers
-        encoder_in = self.mlp_mesh(query_patched)  # * mask_patched
+        encoder_in = self.mlp_mesh(query_patched)
         encoder_out = self.encoder(encoder_in, mask_patched) * mask_patched
 
         # Pass through the decoder layers
-        decoder_in = self.mlp_query(coords_query) * mask_query
-        decoder_out = self.decoder(decoder_in, encoder_out, mask_query, mask_patched)
+        decoder_in = self.mlp_query(coords_query)
+        decoder_out = self.decoder(decoder_in, encoder_out, mask_patched)
 
         # Output mlp layers
-        out = self.mlp_out(decoder_out) * mask_query
-        return out
+        out = self.mlp_out(decoder_out)
+        return out * mask_query

@@ -44,7 +44,7 @@ Recommended environment:
 ### Train MMET on a PDE benchmark:
 
 ```bash
-python train.py --config configs/heat2d.yaml
+python train.py --config config/heat2d.yaml
 ```
 
 ### Inference with pre-trained model:
@@ -91,3 +91,9 @@ If you find this paper or repository helpful, please consider citing:
 
 For questions or collaboration, feel free to contact:
 - **Yichen Luo**: [yichenlu@kth.se](mailto:yichenlu@kth.se)
+
+## Acknowledgements
+
+This repository is built upon the following open-source projects:
+
+- [PyTorch](https://pytorch.org/)

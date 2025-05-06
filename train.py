@@ -1,9 +1,10 @@
+import argparse
 import pickle
 
 import numpy as np
 import torch
 from torch import nn
-from torch.optim import LBFGS
+from torch.optim import LBFGS, AdamW
 from torch.utils.data import DataLoader, Dataset
 
 from model.mmet import MMET
@@ -159,38 +160,8 @@ class Heat2dDataset(Dataset):
         )
 
 
-def main():
-    # Training parameters
-    epochs = 2000
-    batch_size = 50
-
-    # Initialize the elastic body
-    train_path = "cases/heat2d/heat2d_1100_train.pkl"
-    test_path = "cases/heat2d/heat2d_1100_test.pkl"
-    heat2d_train = Heat2dDataset(train_path)
-    heat2d_test = Heat2dDataset(test_path)
-
-    # Initialize the network and optimizer
-    pinn = MMET(
-        d_input='2d',
-        d_input_condition=[1, 1],
-        d_output=1,
-        d_embed=64,
-        d_model=128,
-        patch_size=1,
-        depth=16,
-        num_encoder=2,
-        num_decoder=2,
-        num_heads=2
-    ).to(device)
-
-    # Optimizer and loss function
-    optimizer = LBFGS(pinn.parameters(), lr=1, line_search_fn='strong_wolfe')
-    loss_func = nn.MSELoss()
-    dataloader_train = DataLoader(heat2d_train, batch_size=batch_size, shuffle=True)
-    dataloader_test = DataLoader(heat2d_test, batch_size=heat2d_test.__len__(), shuffle=False)
-
-    err_min = 0.2
+def train(dataloader_train, dataloader_test, model, optimizer, loss_func, epochs):
+    err_min = 0.6
     for epoch in range(epochs):
         for i, data in enumerate(dataloader_train):
             (
@@ -225,7 +196,7 @@ def main():
 
                 # Set the model to training mode
                 optimizer.zero_grad()
-                pred = pinn(points_mesh, bcs_mesh, types_mesh, points_query, mesh_mask, query_mask)
+                pred = model(points_mesh, bcs_mesh, types_mesh, points_query, mesh_mask, query_mask)
                 loss = loss_with_mask(pred, gts_query, query_mask, loss_func)
                 loss.backward()
 
@@ -233,8 +204,15 @@ def main():
                 loss_total += loss.cpu().detach().numpy()
                 return loss
 
-            print("Epoch: {}, Iteration: {}, Loss: {:.4f}".format(epoch, i, loss_total / iter_num))
             optimizer.step(closure)
+            print("Epoch: {}, Iteration: {}, Loss: {:.4f}".format(epoch, i, loss_total / iter_num))
+
+            # optimizer.zero_grad()
+            # pred = model(points_mesh, bcs_mesh, types_mesh, points_query, mesh_mask, query_mask)
+            # loss = loss_with_mask(pred, gts_query, query_mask, loss_func)
+            # loss.backward()
+            # optimizer.step()
+            # print("Epoch: {}, Iteration: {}, Loss: {:.4f}".format(epoch, i, loss.cpu().detach().numpy()))
 
         # Test the model
         with torch.no_grad():
@@ -250,16 +228,61 @@ def main():
                 seq_len_query
             ) = next(iter(dataloader_test))
 
-            pred_test = pinn(points_mesh, bcs_mesh, types_mesh, points_query, mesh_mask, query_mask)
+            pred_test = model(points_mesh, bcs_mesh, types_mesh, points_query, mesh_mask, query_mask)
             err_test = l2_relative_error_with_mask(pred_test, gts_query, query_mask)
 
             print("--------------------------------------------")
             print("Test L2 Error: {:.4f}".format(err_test[0].cpu().detach().numpy()))
             if err_test < err_min:
                 err_min = err_test
-                torch.save(pinn, "cases/heat2d/pinn1.pth")
+                torch.save(model, "datasets/heat2d/model2.pth")
                 print("Save model")
             print("--------------------------------------------")
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Train the MMET model on the heat2d dataset")
+    parser.add_argument("--device", type=str, default="cuda", help="Device to use for training")
+    parser.add_argument("--epochs", type=int, default=2000, help="Number of training epochs")
+    parser.add_argument("--batch_size", type=int, default=100, help="Batch size for training")
+    parser.add_argument("--lr", type=float, default=1, help="Learning rate for the optimizer")
+    args = parser.parse_args()
+
+    # Training parameters
+    device = torch.device(args.device if torch.cuda.is_available() else "cpu")
+    epochs = args.epochs
+    batch_size = args.batch_size
+    lr = args.lr
+
+    # Initialize the elastic body
+    train_path = "datasets/heat2d/heat2d_1100_train.pkl"
+    test_path = "datasets/heat2d/heat2d_1100_test.pkl"
+    heat2d_train = Heat2dDataset(train_path)
+    heat2d_test = Heat2dDataset(test_path)
+
+    # Initialize the network and optimizer
+    model = MMET(
+        d_input='2d',
+        d_input_condition=[1, 1],
+        d_output=1,
+        d_embed=64,
+        d_model=192,
+        patch_size=1,
+        depth=16,
+        num_encoder=4,
+        num_decoder=4,
+        num_heads=3
+    ).to(device)
+    model = nn.DataParallel(model)
+
+    # Optimizer and loss function
+    optimizer = LBFGS(model.parameters(), lr=lr, line_search_fn='strong_wolfe')
+    loss_func = nn.MSELoss()
+    dataloader_train = DataLoader(heat2d_train, batch_size=batch_size, shuffle=True)
+    dataloader_test = DataLoader(heat2d_test, batch_size=heat2d_test.__len__(), shuffle=False)
+
+    # Train the model
+    train(dataloader_train, dataloader_test, model, optimizer, loss_func, epochs)
 
 
 if __name__ == "__main__":

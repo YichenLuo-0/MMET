@@ -57,7 +57,7 @@ def sort_tensor(x, indices):
     return torch.gather(x, 1, indices_out)
 
 
-def desort_tensor(x, indices):
+def resort_tensor(x, indices):
     _, _, d_out = x.shape
     indices_out = indices.unsqueeze(-1).expand(*indices.shape, d_out)
 

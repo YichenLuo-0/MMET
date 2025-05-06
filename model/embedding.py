@@ -24,6 +24,8 @@ class GCE(nn.Module):
         self.learnable_emb = nn.Sequential(*[
             nn.Linear(d_input, d_hidden),
             WaveAct(),
+            nn.Linear(d_hidden, d_hidden),
+            WaveAct(),
             nn.Linear(d_hidden, d_out),
         ])
 
