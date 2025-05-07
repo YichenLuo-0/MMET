@@ -93,22 +93,29 @@ def train(dataloader_train, dataloader_test, model, optimizer, loss_func, epochs
             iter_num = 0
             loss_total = 0.0
 
-            def closure():
-                nonlocal iter_num, loss_total
-                nonlocal points_mesh, bcs_mesh, types_mesh, points_query, gts_query, mesh_mask, query_mask
+            # def closure():
+            #     nonlocal iter_num, loss_total
+            #     nonlocal points_mesh, bcs_mesh, types_mesh, points_query, gts_query, mesh_mask, query_mask
+            #
+            #     # Set the model to training mode
+            #     optimizer.zero_grad()
+            #     pred = model(points_mesh, bcs_mesh, types_mesh, points_query, mesh_mask, query_mask)
+            #     loss = loss_with_mask(pred, gts_query, query_mask, loss_func)
+            #     loss.backward()
+            #
+            #     iter_num += 1
+            #     loss_total += loss.cpu().detach().numpy()
+            #     return loss
+            #
+            # optimizer.step(closure)
+            # print("Epoch: {}, Iteration: {}, Loss: {:.4f}".format(epoch, i, loss_total / iter_num))
 
-                # Set the model to training mode
-                optimizer.zero_grad()
-                pred = model(points_mesh, bcs_mesh, types_mesh, points_query, mesh_mask, query_mask)
-                loss = loss_with_mask(pred, gts_query, query_mask, loss_func)
-                loss.backward()
-
-                iter_num += 1
-                loss_total += loss.cpu().detach().numpy()
-                return loss
-
-            optimizer.step(closure)
-            print("Epoch: {}, Iteration: {}, Loss: {:.4f}".format(epoch, i, loss_total / iter_num))
+            optimizer.zero_grad()
+            pred = model(points_mesh, bcs_mesh, types_mesh, points_query, mesh_mask, query_mask)
+            loss = loss_with_mask(pred, gts_query, query_mask, loss_func)
+            loss.backward()
+            optimizer.step()
+            print("Epoch: {}, Iteration: {}, Loss: {:.4f}".format(epoch, i, loss.cpu().detach().numpy()))
 
         # Evaluate the model
         print("--------------------------------------------")
@@ -116,7 +123,7 @@ def train(dataloader_train, dataloader_test, model, optimizer, loss_func, epochs
         print("Test L2 Error: {:.4f}".format(err_test[0].cpu().detach().numpy()))
         if err_test < err_min:
             err_min = err_test
-            torch.save(model, "datasets/heat2d/model.pth")
+            torch.save(model, "datasets/darcy_flow/model.pth")
             print("Save model")
         print("--------------------------------------------")
 
@@ -125,8 +132,8 @@ def main():
     parser = argparse.ArgumentParser(description="Train the MMET model on the heat2d dataset")
     parser.add_argument("--device", type=str, default="cuda", help="Device to use for training")
     parser.add_argument("--epochs", type=int, default=2000, help="Number of training epochs")
-    parser.add_argument("--batch_size", type=int, default=2, help="Batch size for training")
-    parser.add_argument("--lr", type=float, default=0.5, help="Learning rate for the optimizer")
+    parser.add_argument("--batch_size", type=int, default=100, help="Batch size for training")
+    parser.add_argument("--lr", type=float, default=1e-3, help="Learning rate for the optimizer")
     args = parser.parse_args()
 
     # Training parameters
@@ -161,7 +168,8 @@ def main():
     model = nn.DataParallel(model)
 
     # Optimizer and loss function
-    optimizer = LBFGS(model.parameters(), lr=lr, line_search_fn='strong_wolfe')
+    # optimizer = LBFGS(model.parameters(), lr=lr, line_search_fn='strong_wolfe')
+    optimizer = torch.optim.AdamW(model.parameters(), lr=lr)
     loss_func = nn.MSELoss()
     dataloader_train = DataLoader(heat2d_train, batch_size=batch_size, shuffle=True)
     dataloader_test = DataLoader(heat2d_test, batch_size=heat2d_test.__len__(), shuffle=False)

@@ -51,10 +51,9 @@ class DarcyDataset(Dataset):
         types_mesh = types_mesh.to(device)
 
         if train:
-            return point_mesh[:1000], torch_nu[:1000], types_mesh[:1000], point_mesh[:1000], torch_data[:1000]
+            return point_mesh[:9900], torch_nu[:9900], types_mesh[:9900], point_mesh[:9900], torch_data[:9900]
         else:
-            return (point_mesh[1000:1100], torch_nu[1000:1100], types_mesh[1000:1100], point_mesh[1000:1100],
-                    torch_data[1000:1100])
+            return point_mesh[9900:10000], torch_nu[9900:10000], types_mesh[9900:10000], point_mesh[9900:10000], torch_data[9900:10000]
 
     def __len__(self):
         return len(self.points_mesh)
