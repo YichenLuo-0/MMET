@@ -1,1 +1,1 @@
-from mmet import MMET
+from .mmet import MMET

@@ -6,6 +6,7 @@ from torch.optim import LBFGS
 from torch.utils.data import DataLoader
 
 from datasets import Heat2dDataset
+from datasets.darcy_flow.darcy_flow import DarcyDataset
 from model import MMET
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -124,7 +125,7 @@ def main():
     parser = argparse.ArgumentParser(description="Train the MMET model on the heat2d dataset")
     parser.add_argument("--device", type=str, default="cuda", help="Device to use for training")
     parser.add_argument("--epochs", type=int, default=2000, help="Number of training epochs")
-    parser.add_argument("--batch_size", type=int, default=50, help="Batch size for training")
+    parser.add_argument("--batch_size", type=int, default=2, help="Batch size for training")
     parser.add_argument("--lr", type=float, default=0.5, help="Learning rate for the optimizer")
     args = parser.parse_args()
 
@@ -135,19 +136,23 @@ def main():
     lr = args.lr
 
     # Initialize the elastic body
-    train_path = "datasets/heat2d/heat2d_1100_train.pkl"
-    test_path = "datasets/heat2d/heat2d_1100_test.pkl"
-    heat2d_train = Heat2dDataset(train_path)
-    heat2d_test = Heat2dDataset(test_path)
+    # train_path = "datasets/heat2d/heat2d_1100_train.pkl"
+    # test_path = "datasets/heat2d/heat2d_1100_test.pkl"
+    # heat2d_train = Heat2dDataset(train_path)
+    # heat2d_test = Heat2dDataset(test_path)
+
+    path = "datasets/darcy_flow/2D_DarcyFlow_beta100.0_Train.hdf5"
+    heat2d_train = DarcyDataset(path, train=True)
+    heat2d_test = DarcyDataset(path, train=False)
 
     # Initialize the network and optimizer
     model = MMET(
         d_input='2d',
-        d_input_condition=[1, 1],
+        d_input_condition=[1],
         d_output=1,
         d_embed=32,
         d_model=128,
-        patch_size=1,
+        patch_size=32,
         depth=16,
         num_encoder=2,
         num_decoder=2,

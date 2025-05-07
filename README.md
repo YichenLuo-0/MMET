@@ -55,7 +55,7 @@ We provide training examples of MMET on the Heat2d dataset. You can easily adapt
 modifying the dataloader and model parameters in the `train.py` file. To test this, run the following command:
 
 ```bash
-python train.py
+python train.py --device cuda --epochs 2000 --batch_size 50 --lr 1
 ```
 
 ### Inference with pre-trained model:
