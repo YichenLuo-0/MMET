@@ -238,8 +238,8 @@ def main():
     parser = argparse.ArgumentParser(description="Train the MMET model on the heat2d dataset")
     parser.add_argument("--device", type=str, default="cuda", help="Device to use for training")
     parser.add_argument("--epochs", type=int, default=2000, help="Number of training epochs")
-    parser.add_argument("--batch_size", type=int, default=100, help="Batch size for training")
-    parser.add_argument("--lr", type=float, default=0.1, help="Learning rate for the optimizer")
+    parser.add_argument("--batch_size", type=int, default=50, help="Batch size for training")
+    parser.add_argument("--lr", type=float, default=0.5, help="Learning rate for the optimizer")
     args = parser.parse_args()
 
     # Training parameters
