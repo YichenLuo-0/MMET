@@ -105,4 +105,7 @@ For questions or collaboration, feel free to contact:
 
 This repository is built upon the following open-source projects:
 
-- [PyTorch](https://pytorch.org/)
+- [PDEBench dataset](https://github.com/pdebench/PDEBench)
+- [GNOT](https://github.com/thu-ml/GNOT)
+- [PinnsFormer](https://github.com/AdityaLab/pinnsformer)
+- [Transolver](https://github.com/thuml/Transolver)

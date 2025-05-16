@@ -2,10 +2,8 @@ import argparse
 
 import torch
 from torch import nn
-from torch.optim import LBFGS
 from torch.utils.data import DataLoader
 
-from datasets import Heat2dDataset
 from datasets.darcy_flow.darcy_flow import DarcyDataset
 from model import MMET
 
@@ -90,26 +88,7 @@ def train(dataloader_train, dataloader_test, model, optimizer, loss_func, epochs
             mesh_mask = mesh_mask[:, :max_seq_len_mesh]
             query_mask = query_mask[:, :max_seq_len_query]
 
-            iter_num = 0
-            loss_total = 0.0
-
-            # def closure():
-            #     nonlocal iter_num, loss_total
-            #     nonlocal points_mesh, bcs_mesh, types_mesh, points_query, gts_query, mesh_mask, query_mask
-            #
-            #     # Set the model to training mode
-            #     optimizer.zero_grad()
-            #     pred = model(points_mesh, bcs_mesh, types_mesh, points_query, mesh_mask, query_mask)
-            #     loss = loss_with_mask(pred, gts_query, query_mask, loss_func)
-            #     loss.backward()
-            #
-            #     iter_num += 1
-            #     loss_total += loss.cpu().detach().numpy()
-            #     return loss
-            #
-            # optimizer.step(closure)
-            # print("Epoch: {}, Iteration: {}, Loss: {:.4f}".format(epoch, i, loss_total / iter_num))
-
+            # Train the model
             optimizer.zero_grad()
             pred = model(points_mesh, bcs_mesh, types_mesh, points_query, mesh_mask, query_mask)
             loss = loss_with_mask(pred, gts_query, query_mask, loss_func)
@@ -123,31 +102,24 @@ def train(dataloader_train, dataloader_test, model, optimizer, loss_func, epochs
         print("Test L2 Error: {:.4f}".format(err_test[0].cpu().detach().numpy()))
         if err_test < err_min:
             err_min = err_test
-            torch.save(model, "datasets/darcy_flow/model.pth")
+            torch.save(model, "datasets/darcy_flow/model1.pth")
             print("Save model")
         print("--------------------------------------------")
 
 
 def main():
     parser = argparse.ArgumentParser(description="Train the MMET model on the heat2d dataset")
-    parser.add_argument("--device", type=str, default="cuda", help="Device to use for training")
     parser.add_argument("--epochs", type=int, default=2000, help="Number of training epochs")
     parser.add_argument("--batch_size", type=int, default=100, help="Batch size for training")
     parser.add_argument("--lr", type=float, default=1e-3, help="Learning rate for the optimizer")
     args = parser.parse_args()
 
     # Training parameters
-    device = torch.device(args.device if torch.cuda.is_available() else "cpu")
     epochs = args.epochs
     batch_size = args.batch_size
     lr = args.lr
 
-    # Initialize the elastic body
-    # train_path = "datasets/heat2d/heat2d_1100_train.pkl"
-    # test_path = "datasets/heat2d/heat2d_1100_test.pkl"
-    # heat2d_train = Heat2dDataset(train_path)
-    # heat2d_test = Heat2dDataset(test_path)
-
+    # Initialize the dataset
     path = "datasets/darcy_flow/2D_DarcyFlow_beta100.0_Train.hdf5"
     heat2d_train = DarcyDataset(path, train=True)
     heat2d_test = DarcyDataset(path, train=False)
@@ -168,7 +140,6 @@ def main():
     model = nn.DataParallel(model)
 
     # Optimizer and loss function
-    # optimizer = LBFGS(model.parameters(), lr=lr, line_search_fn='strong_wolfe')
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr)
     loss_func = nn.MSELoss()
     dataloader_train = DataLoader(heat2d_train, batch_size=batch_size, shuffle=True)
