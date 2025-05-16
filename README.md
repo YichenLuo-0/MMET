@@ -51,11 +51,11 @@ Recommended environment:
 
 ### Train MMET on a PDE benchmark:
 
-We provide training examples of MMET on the Heat2d dataset. You can easily adapt the code to train on other datasets by
+We provide training examples of MMET on the Darcy Flow dataset. You can easily adapt the code to train on other datasets by
 modifying the dataloader and model parameters in the `train.py` file. To test this, run the following command:
 
 ```bash
-python train.py --device cuda --epochs 2000 --batch_size 50 --lr 1
+python train.py --device cuda --epochs 2000 --batch_size 4 --lr 1e-3
 ```
 
 ### Inference with pre-trained model:
