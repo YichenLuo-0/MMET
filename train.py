@@ -7,6 +7,8 @@ from torch.utils.data import DataLoader
 from datasets.darcy_flow.darcy_flow import DarcyDataset
 from model import MMET
 
+from datasets import get_dataset
+
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
@@ -109,6 +111,7 @@ def train(dataloader_train, dataloader_test, model, optimizer, loss_func, epochs
 
 def main():
     parser = argparse.ArgumentParser(description="Train the MMET model on the heat2d dataset")
+    parser.add_argument("--dataset", type=str, default="Darcy Flow", help="Dataset name")
     parser.add_argument("--epochs", type=int, default=2000, help="Number of training epochs")
     parser.add_argument("--batch_size", type=int, default=100, help="Batch size for training")
     parser.add_argument("--lr", type=float, default=1e-3, help="Learning rate for the optimizer")
@@ -120,9 +123,7 @@ def main():
     lr = args.lr
 
     # Initialize the dataset
-    path = "datasets/darcy_flow/2D_DarcyFlow_beta100.0_Train.hdf5"
-    heat2d_train = DarcyDataset(path, train=True)
-    heat2d_test = DarcyDataset(path, train=False)
+    dataset_train, dataset_test = get_dataset(args.dataset)
 
     # Initialize the network and optimizer
     model = MMET(
@@ -142,8 +143,8 @@ def main():
     # Optimizer and loss function
     optimizer = torch.optim.AdamW(model.parameters(), lr=lr)
     loss_func = nn.MSELoss()
-    dataloader_train = DataLoader(heat2d_train, batch_size=batch_size, shuffle=True)
-    dataloader_test = DataLoader(heat2d_test, batch_size=heat2d_test.__len__(), shuffle=False)
+    dataloader_train = DataLoader(dataset_train, batch_size=batch_size, shuffle=True)
+    dataloader_test = DataLoader(dataset_test, batch_size=dataset_test.__len__(), shuffle=False)
 
     # Train the model
     train(dataloader_train, dataloader_test, model, optimizer, loss_func, epochs)
