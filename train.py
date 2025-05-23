@@ -60,7 +60,7 @@ def evaluate(model, dataloader_test):
     return err_test
 
 
-def train(dataloader_train, dataloader_test, model, optimizer, loss_func, epochs):
+def train(args, dataloader_train, dataloader_test, model, optimizer, loss_func, epochs):
     err_min = 0.6
     for epoch in range(epochs):
         for i, data in enumerate(dataloader_train):
@@ -102,7 +102,7 @@ def train(dataloader_train, dataloader_test, model, optimizer, loss_func, epochs
         print("Test L2 Error: {:.4f}".format(err_test[0].cpu().detach().numpy()))
         if err_test < err_min:
             err_min = err_test
-            torch.save(model, "datasets/darcy_flow/model1.pth")
+            torch.save(model, "model" + args.dataset + ".pth")
             print("Save model")
         print("--------------------------------------------")
 
@@ -145,7 +145,7 @@ def main():
     dataloader_test = DataLoader(dataset_test, batch_size=dataset_test.__len__(), shuffle=False)
 
     # Train the model
-    train(dataloader_train, dataloader_test, model, optimizer, loss_func, epochs)
+    train(args, dataloader_train, dataloader_test, model, optimizer, loss_func, epochs)
 
 
 if __name__ == "__main__":
