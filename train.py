@@ -4,10 +4,8 @@ import torch
 from torch import nn
 from torch.utils.data import DataLoader
 
-from datasets.darcy_flow.darcy_flow import DarcyDataset
-from model import MMET
-
 from datasets import get_dataset
+from model import MMET
 
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
