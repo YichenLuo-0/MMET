@@ -68,11 +68,11 @@ These datasets span various physical domains and are designed to test MMET’s c
 
 - **Domain**: Elastic beam under bending moment
 - **Task**: Predict displacement and stress fields under varying boundary conditions
-- **Outputs**: Displacement ($u, v$), Stress ($\\sigma_x, \\sigma_y, \\tau_{xy}$)
 - **Geometry**: FEM mesh (5,404 nodes) from Ansys
 - **Train/Test**:
     - Train: 1,000 samples × 1,000 points
     - Test: 100 samples × 5,000 points
+- **Outputs**: Displacement ($u, v$), Stress ($\\sigma_x, \\sigma_y, \\tau_{xy}$)
 - **Special**: Resolution of query points differs across training/testing
 - **Note**: In our paper,we uses von Mises stress to evaluate the stress field, but the dataset provides stress
   components ($\\sigma_x, \\sigma_y, \\tau_{xy}$) for more detailed analysis.
