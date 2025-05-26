@@ -74,12 +74,12 @@ Supported PDE benchmark datasets:
 
 | Dataset       | Type                    | Training Method | Highlights                                |
 |---------------|-------------------------|-----------------|-------------------------------------------|
-| Poisson       | 2D physics-informed     | Physics driven  | Classic PINN setup, analytical solution   |
-| Shape-Net Car | 3D aerodynamics         | Data driven     | Multi-scale meshes, complex geometry      |
-| Darcy Flow    | 2D porous media         | Data driven     | PDEBench benchmark, variable diffusivity  |
-| Heat2D        | 2D thermodynamics       | Data driven     | Multi-input, multi-geometry, dynamic BC   |
-| Beam2D        | 2D solid mechanics      | Data driven     | Elasticity with dynamic boundary loads    |
-| HeatSink2D    | Complex heat conduction | Physics driven  | No ground truth, physics-only supervision |
+| Poisson       | 2D physics-informed     | Physics-driven  | Classic PINN setup, analytical solution   |
+| Shape-Net Car | 3D aerodynamics         | Data-driven     | Multi-scale meshes, complex geometry      |
+| Darcy Flow    | 2D porous media         | Data-driven     | PDEBench benchmark, variable diffusivity  |
+| Heat2D        | 2D thermodynamics       | Data-driven     | Multi-input, multi-geometry, dynamic BC   |
+| Beam2D        | 2D solid mechanics      | Data-driven     | Elasticity with dynamic boundary loads    |
+| HeatSink2D    | Complex heat conduction | Physics-driven  | No ground truth, physics-only supervision |
 
 More details and download links in [`datasets/README.md`](datasets/README.md).
 

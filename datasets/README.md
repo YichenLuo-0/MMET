@@ -12,7 +12,7 @@ These datasets span various physical domains and are designed to test MMET’s c
 - Multi-scale query resolutions
 - Complex geometries and real-world simulations
 
-## Physics Driven Datasets
+## Physics-Driven Datasets
 
 ### Poisson
 
@@ -33,7 +33,7 @@ These datasets span various physical domains and are designed to test MMET’s c
 - **Ground truth**: FEM from Ansys
 - **Note**: Test data = 10 unique FEM samples (to be released)
 
-## Data Driven Datasets
+## Data-Driven Datasets
 
 ### Darcy Flow
 
