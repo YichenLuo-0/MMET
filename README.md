@@ -81,7 +81,7 @@ Supported PDE benchmark datasets:
 | Beam2D        | 2D solid mechanics      | Data driven     | Elasticity with dynamic boundary loads    |
 | HeatSink2D    | Complex heat conduction | Physics driven  | No ground truth, physics-only supervision |
 
-More details and download links in [`datasets/readme.md`](datasets/README).
+More details and download links in [`datasets/README.md`](datasets/README.md).
 
 ## Citation
 
