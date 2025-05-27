@@ -12,6 +12,9 @@ These datasets span various physical domains and are designed to test MMET’s c
 - Multi-scale query resolutions
 - Complex geometries and real-world simulations
 
+To test each dataset, you can download it to the appropriate directory, and our supplied python script will preprocess
+it and prepare it as `torch.Dataset` class for training and inference.
+
 ## Physics-Driven Datasets
 
 ### Poisson
