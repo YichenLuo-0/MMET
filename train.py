@@ -35,7 +35,7 @@ def l2_relative_error_with_mask(pred, targ, mask):
     errors_l2 = torch.norm(pred - targ, dim=-2)
 
     # Calculate the relative error
-    le_errors = errors_l2 / targets_l2
+    le_errors = errors_l2 / (targets_l2 + 1e-8)
     return torch.mean(le_errors, dim=0)
 
 
