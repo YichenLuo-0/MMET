@@ -52,11 +52,16 @@ Recommended environment:
 ### Train MMET on a PDE benchmark:
 
 We provide training examples of MMET on the Darcy Flow dataset. You can easily adapt the code to train on other datasets
-by
-modifying the dataloader and model parameters in the `train.py` file. To test this, run the following command:
+by modifying the dataloader and model parameters in the `train.py` file. To test this, run the following command:
 
 ```bash
-python train.py --device cuda --epochs 2000 --batch_size 4 --lr 1e-3
+python train.py --epochs 2000 --batch_size 4 --lr 1e-3
+```
+
+For physics-driven datasets, we provide training scripts in the `train_pinn.py` file. You can run it with:
+
+```bash
+python train_pinn.py --epochs 2000 --lr 1e-1
 ```
 
 ### Inference with pre-trained model:
