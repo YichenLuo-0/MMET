@@ -2,11 +2,11 @@ def get_dataset(dataset_name):
     if dataset_name == "Darcy Flow":
         from .darcy_flow.darcy_flow import DarcyDataset
         dataset_train = DarcyDataset(
-            file_path="datasets/darcy_flow/darcy_flow.h5",
+            file_path="./datasets/darcy_flow/2D_DarcyFlow_beta100.0_Train.hdf5",
             train=True
         )
         dataset_test = DarcyDataset(
-            file_path="datasets/darcy_flow/darcy_flow.h5",
+            file_path="./datasets/darcy_flow/2D_DarcyFlow_beta100.0_Train.hdf5",
             train=False
         )
 

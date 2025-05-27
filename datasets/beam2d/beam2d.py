@@ -56,11 +56,9 @@ class Beam2dDataset(Dataset):
 
         points_mesh = torch.cat(points_mesh, dim=0).to(device)
         bcs_mesh = torch.cat(bcs_mesh, dim=0).to(device)
-        types_mesh = torch.zeros_like(points_mesh[:, :, 0:1], dtype=torch.int32).to(device)
+        types_mesh = bcs_mesh[:, :, 0:1]
         points_query = torch.cat(points_query, dim=0).to(device)
         gts_query = torch.cat(gts_query, dim=0).to(device)
-
-        print(points_mesh.shape, bcs_mesh.shape, types_mesh.shape, points_query.shape, gts_query.shape)
 
         return points_mesh, bcs_mesh, types_mesh, points_query, gts_query
 
@@ -87,16 +85,20 @@ class Beam2dDataset(Dataset):
 if __name__ == "__main__":
     dataset = Beam2dDataset(fea_path="beam2d.rst", train=True)
     print("Number of data points in the dataset:", len(dataset))
-    # for i in range(5):
-    #     sample = dataset[i]
-    #     print(f"Sample {i}:")
-    #     print("Mesh Points:", sample[0].shape)
-    #     print("Boundary Conditions:", sample[1].shape)
-    #     print("Types Mesh:", sample[2].shape)
-    #     print("Query Points:", sample[3].shape)
-    #     print("Ground Truths:", sample[4].shape)
-    #     print("Mesh Mask:", sample[5].shape)
-    #     print("Query Mask:", sample[6].shape)
-    #     print("Sequence Length Mesh:", sample[7])
-    #     print("Sequence Length Query:", sample[8])
-    #     print()
+    for i in range(5):
+        sample = dataset[i]
+
+        print(sample[1])
+        print(sample[2])
+
+        print(f"Sample {i}:")
+        print("Mesh Points:", sample[0].shape)
+        print("Boundary Conditions:", sample[1].shape)
+        print("Types Mesh:", sample[2].shape)
+        print("Query Points:", sample[3].shape)
+        print("Ground Truths:", sample[4].shape)
+        print("Mesh Mask:", sample[5].shape)
+        print("Query Mask:", sample[6].shape)
+        print("Sequence Length Mesh:", sample[7])
+        print("Sequence Length Query:", sample[8])
+        print()

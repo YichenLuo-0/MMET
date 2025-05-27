@@ -4,6 +4,10 @@ import numpy as np
 
 class Beam:
     def __init__(self, num_data, e, nu, l, h, fea_path=None):
+        # Set random seed for reproducibility
+        self.seed = 123
+        np.random.seed(self.seed)
+
         # Initialize the material properties
         self.num_data = num_data
         self.e = e
@@ -14,7 +18,7 @@ class Beam:
         # Initialize the geometry limits
         self.l = l
         self.h = h
-        self.q0 = [(i / 10) + 10.1 for i in range(num_data)]
+        self.m = np.linspace(-50, 50, num_data)
 
         # Initialize the mesh geometry from the FEA results
         _, self.nodes, _ = self.load_fea_result(fea_path)
@@ -72,13 +76,14 @@ class Beam:
         return np.concatenate([x_top, x_bottom, x_left, x_right]), np.concatenate([y_top, y_bottom, y_left, y_right])
 
     def get_points_random(self, n):
+        rng = np.random.RandomState(self.seed)
         x_min = 0
         x_max = self.l / 2
         y_min = self.h / 2
         y_max = self.h / 2
 
-        x = np.random.uniform(x_min, x_max, n)
-        y = np.random.uniform(y_min, y_max, n)
+        x = rng.uniform(x_min, x_max, n)
+        y = rng.uniform(y_min, y_max, n)
         return x, y
 
     def get_boundary_conditions(self, x, y, index):
@@ -96,14 +101,15 @@ class Beam:
 
         # Right face
         elif x == 5:
-            m_ = -y * (index - 50) * 0.2
-            bc = np.array([1, 1, 0, m_, 0, 0, 0])
+            m = self.m[index]
+            m_euqal = -y * m * 0.2
+            bc = np.array([1, 1, 0, m_euqal, 0, 0, 0])
 
         # Lower and upper faces
         elif y == 0.5 or y == -0.5:
             bc = np.array([1, 0, 0, 0, 0, 0, 0])
 
-        # 其他内部点无边界条件
+        # Other points
         else:
             bc = np.array([0, 0, 0, 0, 0, 0, 0])
         return bc
@@ -115,7 +121,7 @@ class Beam:
         if index >= self.num_data:
             raise ValueError("The index is out of range!")
 
-        m = index - 50
+        m = self.m[index]
 
         u = (3 * m * (2 * self.mu + self.phi)) / (self.mu * (self.phi + self.mu) * self.l ** (self.h ** 3)) * x * y
         v = (-(3 * m) / (2 * self.mu * (self.phi + self.mu) * self.l ** (self.h ** 3)) *

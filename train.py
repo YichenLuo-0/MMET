@@ -94,25 +94,42 @@ def train(args, dataloader_train, dataloader_test, model, optimizer, loss_func, 
             loss = loss_with_mask(pred, gts_query, query_mask, loss_func)
             loss.backward()
             optimizer.step()
-            print("Epoch: {}, Iteration: {}, Loss: {:.4f}".format(epoch, i, loss.cpu().detach().numpy()))
+            print("\rEpoch: {}, Iteration: {}, Loss: {:.4f}".format(epoch, i, loss.cpu().detach().numpy()), end='',
+                  flush=True)
 
         # Evaluate the model
+        print()
         print("--------------------------------------------")
         err_test = evaluate(model, dataloader_test)
-        print("Test L2 Error: {:.4f}".format(err_test[0].cpu().detach().numpy()))
+        err_test = torch.sum(err_test)
+        print("Test L2 Error: {:.4f}".format(err_test.cpu().detach().numpy()))
         if err_test < err_min:
             err_min = err_test
             torch.save(model, "model" + args.dataset + ".pth")
             print("Save model")
         print("--------------------------------------------")
+        print()
 
 
 def main():
     parser = argparse.ArgumentParser(description="Train the MMET model on the heat2d dataset")
+    # Add dataset parameters
     parser.add_argument("--dataset", type=str, default="Darcy Flow", help="Dataset name")
+    # Add training parameters
     parser.add_argument("--epochs", type=int, default=2000, help="Number of training epochs")
-    parser.add_argument("--batch_size", type=int, default=100, help="Batch size for training")
+    parser.add_argument("--batch_size", type=int, default=4, help="Batch size for training")
     parser.add_argument("--lr", type=float, default=1e-3, help="Learning rate for the optimizer")
+    # Add model parameters
+    parser.add_argument("--d_input", type=str, default="2d", help="Input dimension (2d or 3d)")
+    parser.add_argument("--d_input_condition", type=int, nargs='+', default=[1], help="Input condition dimensions")
+    parser.add_argument("--d_output", type=int, default=1, help="Output dimension")
+    parser.add_argument("--d_embed", type=int, default=32, help="Embedding dimension")
+    parser.add_argument("--d_model", type=int, default=128, help="Model dimension")
+    parser.add_argument("--patch_size", type=int, default=2, help="Patch size for the model")
+    parser.add_argument("--depth", type=int, default=16, help="Depth of the model")
+    parser.add_argument("--num_encoder", type=int, default=2, help="Number of encoder layers")
+    parser.add_argument("--num_decoder", type=int, default=2, help="Number of decoder layers")
+    parser.add_argument("--num_heads", type=int, default=2, help="Number of attention heads")
     args = parser.parse_args()
 
     # Training parameters
@@ -125,16 +142,16 @@ def main():
 
     # Initialize the network and optimizer
     model = MMET(
-        d_input='2d',
-        d_input_condition=[1],
-        d_output=1,
-        d_embed=32,
-        d_model=128,
-        patch_size=32,
-        depth=16,
-        num_encoder=2,
-        num_decoder=2,
-        num_heads=2
+        d_input=args.d_input,
+        d_input_condition=args.d_input_condition,
+        d_output=args.d_output,
+        d_embed=args.d_embed,
+        d_model=args.d_model,
+        patch_size=args.patch_size,
+        depth=args.depth,
+        num_encoder=args.num_encoder,
+        num_decoder=args.num_decoder,
+        num_heads=args.num_heads
     ).to(device)
     model = nn.DataParallel(model)
 
