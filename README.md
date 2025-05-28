@@ -70,6 +70,13 @@ MMET/
 │   └── shape_net_car/         # Shape-Net Car dataset implementation
 │       └── shape_net_car.py   # Shape-Net Car dataset class
 ├── model/                     # MMET model implementation
+│   ├── __init__.py            # Package initialization
+│   ├── activation_func.py     # Custom WaveAct activation functions
+│   ├── embedding.py           # Gated Condition Embedding (GCE) layer
+│   ├── hilbert.py             # Hilbert curve utilities for patch embedding
+│   ├── mmet.py                # MMET model definition
+│   ├── patching.py            # Patch embedding utilities
+│   └── serialization.py       # Model serialization utilities
 ├── train.py                   # Training script for MMET
 ├── train_pinn.py              # Training script for physics-informed PINNs
 ├── inference.py               # Inference script for MMET
