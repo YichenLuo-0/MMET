@@ -47,6 +47,38 @@ Recommended environment:
 - PyTorch ≥ 1.11
 - GPU with ≥ 24GB memory for full-scale experiments
 
+## Directory Layout
+
+```plaintext
+MMET/
+├── datasets/                  # Dataset definitions and utilities
+│   ├── README.md              # Dataset overview and download instructions
+│   ├── __init__.py            # Package initialization
+│   ├── datasets.py            # Dataset loading and processing utilities
+│   ├── datasets_pinn.py       # Physics-informed dataset utilities
+│   ├── beam2d/                # Beam2D dataset implementation
+│   │   ├── beam2d.py          # Beam2D dataset class
+│   │   └── data_generation.py # Data generation script for Beam2D
+│   ├── darcy_flow/            # Darcy Flow dataset implementation
+│   │   └── darcy_flow.py      # Darcy Flow dataset class
+│   ├── heat2d/                # Heat2D dataset implementation
+│   │   └── heat2d.py          # Heat2D dataset class
+│   ├── heat_sink2d/           # HeatSink2D dataset implementation
+│   │   └── heat_sink2d.py     # HeatSink2D dataset class
+│   ├── poisson/               # Poisson dataset implementation
+│   │   └── poisson.py         # Poisson dataset class
+│   └── shape_net_car/         # Shape-Net Car dataset implementation
+│       └── shape_net_car.py   # Shape-Net Car dataset class
+├── model/                     # MMET model implementation
+├── train.py                   # Training script for MMET
+├── train_pinn.py              # Training script for physics-informed PINNs
+├── inference.py               # Inference script for MMET
+├── requirements.txt           # Python package dependencies
+├── README.md                  # Project overview and instructions
+├── LICENSE                    # License information
+└── fig/                       # Figures for documentation
+```
+
 ## Getting Started
 
 ### Train MMET on a PDE benchmark:
