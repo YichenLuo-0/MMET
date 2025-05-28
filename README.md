@@ -97,7 +97,7 @@ by modifying the dataloader and model parameters in the `train.py` file. To test
 python train.py --epochs 2000 --batch_size 4 --lr 1e-3
 ```
 
-For physics-driven datasets, we provide training scripts in the `train_pinn.py` file. You can run it with:
+For physics-driven datasets, we provide another training scripts in the `train_pinn.py` file. You can run it with:
 
 ```bash
 python train_pinn.py --epochs 2000 --lr 1e-1
