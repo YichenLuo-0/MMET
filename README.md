@@ -1,6 +1,6 @@
 # MMET: Multi-Input and Multi-Scale Efficient Transformer
 
-[![Paper (IJCAI 2025)](https://img.shields.io/badge/Paper-IJCAI%202025-green)](https://github.com/YichenLuo-0/MMET)
+[![Paper (IJCAI 2025)](https://img.shields.io/badge/Paper-IJCAI%202025-green)](https://arxiv.org/abs/2506.17230)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
 Code for **MMET: A Multi-Input and Multi-Scale Transformer for Efficient PDEs Solving**, presented at *the 34th
