@@ -8,10 +8,15 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 
 def l2_relative_error_with_mask(pred, targ, mask):
+    # Calculate the pointwise error, with the shape of [batch_size, max_seq_len, dims]
     pred = pred * mask
     targ = targ * mask
+
+    # Calculate the L2 norm of the target
     targets_l2 = torch.norm(targ, dim=-2)
     errors_l2 = torch.norm(pred - targ, dim=-2)
+
+    # Calculate the relative error
     le_errors = errors_l2 / (targets_l2 + 1e-8)
     return torch.mean(le_errors, dim=0)
 
