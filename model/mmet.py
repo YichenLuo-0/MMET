@@ -224,8 +224,10 @@ class MMET(nn.Module):
         # If the mask is not provided, set it to all ones
         if mask_mesh is None:
             mask_mesh = torch.ones_like(coords_mesh, device=coords_mesh.device)[..., 0:1]
+            mask_mesh = mask_mesh.dtype(torch.bool)
         if mask_query is None:
             mask_query = torch.ones_like(coords_query, device=coords_query.device)[..., 0:1]
+            mask_query = mask_query.dtype(torch.bool)
         batch_size, max_seq_len, _ = coords_mesh.size()
 
         # Embedding and positional encoding, and encode the boundary conditions
