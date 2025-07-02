@@ -60,7 +60,6 @@ def inference(model, dataloader):
 
             print(f"Batch Error: {total_err.item():.4f}")
 
-    # 合并所有批次的预测结果和误差
     # merge predictions and errors
     all_predictions = torch.cat(all_predictions, dim=0)
     avg_error = sum(all_errors) / len(all_errors)
@@ -75,20 +74,20 @@ def main():
     parser.add_argument("--save_output", action="store_true", help="Save predictions to file")
     args = parser.parse_args()
 
-    # load dataset
+    # load the dataset based on the provided dataset name
     _, dataset_test = get_dataset(args.dataset)
     dataloader_test = DataLoader(dataset_test, batch_size=args.batch_size, shuffle=False)
 
-    # load model
+    # load the trained model from the specified path
     model = torch.load(args.model_path, map_location=device)
     model.to(device)
     print(f"Loaded model from {args.model_path}")
 
-    # perform inference
+    # perform inference on the test dataset
     predictions, avg_error = inference(model, dataloader_test)
     print(f"\nAverage L2 Relative Error: {avg_error:.4f}")
 
-    # save predictions if required
+    # save predictions to a file if specified
     if args.save_output:
         torch.save(predictions, f"predictions_{args.dataset.replace(' ', '_')}.pt")
         print(f"Predictions saved to predictions_{args.dataset.replace(' ', '_')}.pt")
