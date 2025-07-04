@@ -105,7 +105,7 @@ def train(args, dataloader_train, dataloader_test, model, optimizer, loss_func, 
         print("Test L2 Error: {:.4f}".format(err_test.cpu().detach().numpy()))
         if err_test < err_min:
             err_min = err_test
-            torch.save(model, "model" + args.dataset + ".pth")
+            torch.save(model, "model - " + args.dataset + ".pth")
             print("Save model")
         print("--------------------------------------------")
         print()
